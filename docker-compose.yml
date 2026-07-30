@@ -11,8 +11,8 @@ services:
     restart: always
     depends_on:
       - api
-    networks:
-      - plane-network
+    #networks:
+    #  - plane-network
 
   admin:
     container_name: admin
@@ -27,8 +27,8 @@ services:
     depends_on:
       - api
       - web
-    networks:
-      - plane-network
+    #networks:
+    #  - plane-network
 
   space:
     container_name: space
@@ -43,8 +43,8 @@ services:
     depends_on:
       - api
       - web
-    networks:
-      - plane-network
+    #networks:
+    #  - plane-network
 
   api:
     container_name: api
@@ -62,8 +62,8 @@ services:
     depends_on:
       - plane-db
       - plane-redis
-    networks:
-      - plane-network
+    #networks:
+    #  - plane-network
 
   worker:
     container_name: bgworker
@@ -82,8 +82,8 @@ services:
       - api
       - plane-db
       - plane-redis
-    networks:
-      - plane-network
+    #networks:
+    #  - plane-network
 
   beat-worker:
     container_name: beatworker
@@ -102,8 +102,8 @@ services:
       - api
       - plane-db
       - plane-redis
-    networks:
-      - plane-network
+    #networks:
+    #  - plane-network
 
   migrator:
     container_name: plane-migrator
@@ -121,17 +121,19 @@ services:
     depends_on:
       - plane-db
       - plane-redis
-    networks:
-      - plane-network
+    #networks:
+    #  - plane-network
 
-  #live:
-  #  container_name: plane-live
-  #  build:
-  #    context: .
-  #    dockerfile: ./apps/live/Dockerfile.live
-  #    args:
-  #      DOCKER_BUILDKIT: 1
-  #  restart: always
+  live:
+    container_name: plane-live
+    build:
+      context: .
+      dockerfile: ./apps/live/Dockerfile.live
+      platforms:
+        - linux/amd64
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: always
 
   plane-db:
     container_name: plane-db
@@ -147,8 +149,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGDATA: /var/lib/postgresql/data
-    networks:
-      - plane-network
+    #networks:
+    #  - plane-network
 
   plane-redis:
     container_name: plane-redis
@@ -156,8 +158,8 @@ services:
     restart: always
     volumes:
       - redisdata:/data
-    networks:
-      - plane-network
+    #networks:
+    #  - plane-network
 
   plane-mq:
     container_name: plane-mq
@@ -171,8 +173,8 @@ services:
       RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
-    networks:
-      - plane-network
+    #networks:
+    #  - plane-network
 
   plane-minio:
     container_name: plane-minio
@@ -184,8 +186,8 @@ services:
     environment:
       MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
       MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
-    networks:
-      - plane-network
+    #networks:
+    #  - plane-network
 
   # Comment this if you already have a reverse proxy running
   #proxy:
@@ -212,12 +214,7 @@ volumes:
   uploads:
   rabbitmq_data:
 
-networks:
-  plane-network:
-    external: true
-    name: docker_plane-network
-
-#plane-minio  | API: http://172.23.0.4:9000  http://127.0.0.1:9000 
-#plane-minio  | WebUI: http://172.23.0.4:9090 http://127.0.0.1:9090  
-#plane-minio  | 
-#plane-minio  | Docs: https://docs.min.io
+#networks:
+#  plane-network:
+#    external: true
+#    name: docker_plane-network
